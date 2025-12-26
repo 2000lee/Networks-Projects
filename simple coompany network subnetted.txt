@@ -1,0 +1,33 @@
+en
+config t
+hostname MAIN ROUTER
+
+int Gig 0/0
+ip add 192.168.100.1 255.255.255.128
+no shutdown
+int Gig 0/1
+ip add 192.168.100.129 255.255.255.128
+no shutdown
+
+ip dhcp excluded-address 192.168.100.1 
+ip dhcp excluded-address 192.168.100.129 
+
+ip dhcp pool POOL_192.168.100.1
+network 192.168.100.0 255.255.255.128
+default-router 192.168.100.1
+dns-server 8.8.8.8
+
+ip dhcp pool POOL_192.168.100.129
+network 192.168.100.128 255.255.255.128
+default-router 192.168.100.129
+dns-server 8.8.8.8
+
+interface gig 0/0
+ ip address 192.168.100.1 255.255.255.128
+ duplex auto
+ speed auto
+
+interface gig 0/1
+ ip address 192.168.100.129 255.255.255.128
+ duplex auto
+ speed auto

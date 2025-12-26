@@ -1,0 +1,274 @@
+ACCEESS LAYE SWICTHES and all swithes
+------------------
+en
+config t
+hostname HQ-MLSW2
+
+enable password cisco
+line console 0
+password cisco
+login 
+exit
+
+banner motd #NO UNAUTHORISED ACCESS!!!!#
+no ip domain-lookup
+
+service password-encr
+do write
+------------------------------
+SSH CONFIGURATION IN LMLS
+---------------------------------
+
+username cisco password cisco
+ip domain-name cisco.com
+
+crypto key generate rsa          ((key is 1024))
+
+ip ssh version 2
+
+line vty 0 15
+login local
+
+transport input ssh
+exit
+do write
+
+---------------------
+VLAN CONFIG  in access switches
+--------------------------
+CONFIGURE TRUNK PORT 
+ACCESS PORTS 
+VLANS 
+
+vlan 50
+name DATA
+vlan 120
+name VOICE
+
+int range fa0/1-2
+switchport mode trunk
+exit
+
+int range fa0/3-24
+switchport mode access
+switchport access vlan 50
+switchport voice vlan 120
+
+------------------------------------
+in MLSW we woulld configure trunks to the ports inconnected to the acces s switches
+--------------------------------------
+
+vlan 10
+name HR
+vlan 20
+name CS
+vlan 30
+name MK
+vlan 40
+name LM
+vlan 50
+name ICT
+
+vlan 10
+name DATA
+vlan 120
+name VOICE
+exit
+
+int range gigabitEthernet 1/0/2-6
+switchport mode trunk
+
+(for port thast given the ip asdd t other route would be made a layer 3 interface )
+int gig1/0/1
+no switchport 
+
+ip add 192.168.21.21 255.255.255.252
+no sh
+
+ 
+
+----------------------------------
+SERVER ROOM SIDE prt security
+------------------------------------
+int range fa0/2-5
+switchport mode access
+switchport port-security maximum 1
+switchport port-security mac-add sticky
+
+switchport port-security violation shutdown
+
+do wr
+ex
+vlan 99
+
+int range fa0/6-24, gig0/1-2
+switchport mode access 
+switchport access vlan 99
+shutdown
+
+
+------------------------------
+hq voice router
+-----------------------
+int fa0/0.120
+encapsulation dot1q 120
+ip add 10.10.10.1 255.255.255.0
+exit
+do wr
+
+router ospf 10
+router-id 3.3.3.3
+network 10.10.10.0 0.0.0.255 area 0
+
+
+------------------------------
+router interface ip giving
+------------------------
+int gig0/0
+ip add 192.168.21.18 255.255.255.252
+no sh
+ex
+int gig0/1
+ip add 192.168.21.22 255.255.255.252
+no sh
+ex
+
+int serial0/2/0
+ip add 190.200.100.13 255.255.255.252
+no sh
+ex
+int serial0/2/1
+ip add 190.200.100.9 255.255.255.252
+no sh
+ex
+
+----------------------------------------
+ospf configuratin
+in mlsand all routers (the networks advertised are advertised accordin to the inteface ip networks cnnnected to them)
+---------------------------------------
+ip routing
+router ospf 10
+router-id 7.7.7.7	
+
+network 191.200.100.8 0.0.0.3 area 0
+network 191.200.100.12 0.0.0.3 area 0
+network 191.168.21.0 0.0.0.15 area 0
+
+------------------------------------------
+INTER VLAN ROUTING IN MLS
+---------------------------------------------
+
+CREATE SUBINTERFACES
+
+int vlan 10
+ip add 192.168.20.1 255.255.255.192
+ip ospf 10 area 0
+ip helper-address 192.168.21.5
+exit
+
+int vlan 20
+ip add 192.168.20.65 255.255.255.192
+ip helper-address 192.168.21.5
+exit
+
+int vlan 30
+ip add 192.168.20.129 255.255.255.192
+ip helper-address 192.168.21.5
+exit
+
+int vlan 40
+ip add 192.168.20.193 255.255.255.224
+ip helper-address 192.168.21.5
+exit
+
+int vlan 50
+ip add 192.168.20.225 255.255.255.224
+ip helper-address 192.168.21.5
+exit
+
+do wr
+----------------------------------------
+RECTIFICATION ALL INTERFACE WITHA  NETWORK
+LINKED SHOULD BE GIVE THE
+IP OSFP 10 AREA 0 to eneable the ospf
+-----------------------------------------------------
+
+int gig1/0/1
+ip ospf 10 area 0
+ex
+int gig1/0/2
+ip ospf 10 area 0
+
+int vlan 10
+ip ospf 10 area 0
+int vlan 20
+ip ospf 10 area 0
+int vlan 30
+ip ospf 10 area 0
+int vlan 40
+ip ospf 10 area 0
+int vlan 50
+ip ospf 10 area 0
+
+
+
+int serial0/2/0
+ip ospf 10 area 0
+ex
+int serial0/2/1
+ip ospf 10 area 0
+ex
+int gig0/1
+ip ospf 10 area 0
+
+
+
+----------------------------------
+VOIC ROUTER CONFIGURATION
+
+service dhcp
+
+ip dhcp pool VOICE
+network 10.10.10.0 255.255.255.0
+default-router 10.10.10.1
+option 150 ip 10.10.10.1
+dns server 10.10.10.1
+ip dhcp excluded-address 10.10.10.1
+
+telephony-service
+max-ephones 20  (numbe of phones)
+max-dn 20 (number of assigned numbers)
+
+ip source-address 10.10.10.1 port 2000
+
+auto assign 1 to 20
+ex
+
+ephone-dn 1
+number 401
+ex
+ephone-dn 2
+number 402
+ex
+ephone-dn 3
+number 403
+ex
+ephone-dn 4
+number 404
+ex
+ephone-dn 4
+number 404
+ex
+ephone-dn 5
+number 405
+ex
+
+do wr
+--------------------------------------
+interface GigabitEthernet1/0/2
+no switchport
+ip address 10.10.10.2 255.255.255.0
+ip ospf 10 area 0
+duplex auto
+speed auto
+

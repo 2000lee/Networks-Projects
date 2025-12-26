@@ -1,0 +1,75 @@
+asa firewall configuration
+------------------------------------
+
+int vlan 1
+nameif inside
+security-level 100
+ip add 192.168.1.1 255.255.255.0
+no sh
+int vlan 2
+nameif outside
+security-level 0
+ip add 209.165.200.2 255.255.255.248
+no sh
+int vlan 3
+no forward interface vlan 1  
+nameif dmz
+security-level 50
+ip add 192.168.2.1 255.255.255.0
+no sh
+ex
+
+route outside 0.0.0.0 0.0.0.0 209.165.200.1
+
+int et0/1 
+switchport mode access
+switchport access vlan 2
+ex
+int et0/0 
+switchport mode access
+switchport access vlan 1
+ex
+int et0/2
+switchport mode access
+switchport access vlan 3
+ex
+
+
+class-map inspection_default
+match default-inspection-traffic
+exit
+policy-map global_policy 
+class inspection_default
+inspect http
+inspect icmp
+ex
+service-policy  global_policy global
+
+object network inside-LAN
+subnet 192.168.1.0 255.255.255.0
+nat (inside,outside) dynamic interface 
+ex
+
+object network server-DMZ
+host 192.168.2.254
+nat (dmz,outside)static 209.165.200.3
+ex
+config t
+access-list sever_DMZ_ACL extended permit ip any object server-DMZ
+access-group sever_DMZ_ACL in interface outside
+
+
+
+
+-------------------------------------
+intrnet router config
+---------------------------------------
+
+int gig0/0
+ip addr 209.165.200.1 255.255.255.248
+no sh
+ex
+int gig0/1
+ip addr 8.8.8.1 255.255.255.0
+no sh
+ex

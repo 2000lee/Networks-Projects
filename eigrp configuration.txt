@@ -1,0 +1,48 @@
+en
+config t
+
+int gig0/0
+ip addr 10.10.10.10 255.255.255.252
+no sh
+ex
+
+int gig0/1
+ip addr 10.10.10.14 255.255.255.252
+no sh
+ex
+
+
+int gig0/2
+ip addr 10.10.10.5 255.255.255.252
+no sh
+ex
+
+
+---------------------------
+EGRP CONFIG
+----------------------------------wild card mask is the invers of the subnet mask
+router eigrp 30
+network 192.168.1.0 0.0.0.255   
+network 10.10.10.0 0.0.0.3
+network 10.10.10.4 0.0.0.3
+ex 
+do wr
+
+router eigrp 30
+network 10.10.10.12 0.0.0.3
+network 10.10.10.4 0.0.0.3
+ex 
+do wr
+
+router eigrp 30
+network 10.10.10.0 0.0.0.3
+network 10.10.10.8 0.0.0.3
+ex 
+do wr
+
+router eigrp 30
+network 192.168.2.0 0.0.0.255   
+network 10.10.10.8 0.0.0.3
+network 10.10.10.12 0.0.0.3
+ex 
+do wr

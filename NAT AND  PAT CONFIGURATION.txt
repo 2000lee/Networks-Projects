@@ -1,0 +1,76 @@
+hostname s1
+int fa0/0 
+ip add 192.168.1.1 255.255.255.0
+no sh
+
+int fa0/1
+ip add 192.168.3.1 255.255.255.0
+no sh
+
+ip route 0.0.0.0 0.0.0.0 192.168.3.2
+no sh
+
+route rip
+network 192.168.1.0
+network 192.168.3.0
+
+no auto summary
+
+ip dhcp excluded-address 192.168.1.1
+ip dhcp pool 192.168.1.1
+network 192.168.1.0 255.255.255.0
+default-router 192.168.1.1
+
+-----------------------------------------------
+R2
+-----------------
+en
+config t
+hostname R2
+
+int fa0/0
+ip add 192.168.3.2 255.255.255.0
+no sh
+
+int fa0/1
+ip add 192.168.2.1 255.255.255.0
+no sh
+
+int fa1/0
+ip add 200.1.1.1 255.255.255.0
+no sh
+
+ip route 0.0.0.0 0.0.0.0 200.1.1.2
+router rip
+ver 2
+network 192.168.2.0
+network 192.168.3.0
+no auto-summary
+
+access-list 1 permit 192.168.1.0 0.0.0.255
+
+access-list 1 permit 192.168.2.0 0.0.0.255
+ip nat inside source list 1 interface fa1/0 overload
+
+
+int fa1/0
+ip nat inside
+int fa0/0
+ip nat inside
+int fa1/0
+ip nat outside
+
+-------------------------------------------
+ISP ROUTER
+------------------------------
+
+en
+config t
+hostname ISP
+int f0/0
+ip add 200.1.1.2 255.255.255.0
+no sh
+
+int lo0
+ip add 8.8.8.8 255.0.0.0
+

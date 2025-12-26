@@ -1,0 +1,64 @@
+en
+config t
+int f0/1
+switchport mode trunk
+ex
+
+vlan 10
+name IT
+
+vlan 20
+name sale
+
+int f0/2
+switchport access vlan 10
+no sh
+
+int f0/3
+swicthport access vlan 20
+
+
+-----------------------------------\
+sw 1
+-----------------------------
+
+en
+config t
+
+vlan 10
+name sales
+
+vlan 20
+name marketing
+
+
+int range f0/2-3
+switchport mode access
+switchport access vlan 10
+
+int range f0/4-5
+switchport mode access
+switchport access vlan 20
+
+
+
+----------------sw2
+-------------------------
+en
+config t
+
+vlan 10
+name sales
+
+vlan 20
+name marketing
+
+
+int range f0/2-3
+switchport mode access
+switchport access vlan 20
+
+
+int range f0/4-5
+switchport mode access
+switchport access vlan 10

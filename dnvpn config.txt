@@ -1,0 +1,85 @@
+----------------------------
+HQ
+----------------------------
+en
+config t
+int gig0/0 
+ip addr 10.1.1.1 255.255.255.0
+no sh 
+ex
+int ser0/2/0 
+ip addr 192.0.2.1 255.255.255.252
+no sh 
+ex
+
+crypto isakmp policy 10
+encryption aes
+authentication pre-share
+group 2
+ex
+crypto iskamp key cisco address 0.0.0.0 0.0.0.0
+crypto ipsec transform-set KWTRAIN esp-aes esp-sha-hmac
+ex
+crypto ipsec profile cisco_profile
+set transform-set KWTRAIN
+ 
+int tunnel 0
+bandwidth 10000
+no ip next-hop-self eigrp 1
+no ip split-horizon eigrp 1
+ip addr 172.16.1.1 255.255.255.0
+ip mtu 1400
+ip tcp-adjust-mss 1360
+
+
+
+----------------------------------
+internet
+---------------------------------------
+en
+config t
+int ser0/2/0 
+ip addr 192.0.2.2 255.255.255.252 
+no sh
+ex
+
+int ser0/2/1
+ip addr C255.255.255.252 
+no sh
+ex
+
+int ser0/3/0 
+ip addr 198.51.100.2 255.255.255.252 
+no sh
+ex
+
+----------------------------
+BRANCH 1
+----------------------------
+en
+config t
+int gig0/0 
+ip addr 10.1.2.1 255.255.255.0
+no sh 
+ex
+
+int ser0/2/0 
+ip addr 203.0.223.1 255.255.255.252
+no sh 
+ex
+
+
+----------------------------
+BRANCH 2
+----------------------------
+en
+config t
+int gig0/0 
+ip addr 10.1.3.1 255.255.255.0
+no sh 
+ex
+
+int ser0/2/0 
+ip addr 198.51.100.1 255.255.255.252
+no sh 
+ex

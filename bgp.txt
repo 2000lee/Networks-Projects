@@ -1,0 +1,65 @@
+ASN2010 router
+---------------------------
+en
+config t
+
+int gig0/0 
+ip addr 192.168.20.1 255.255.255.0
+no sh
+ex
+
+int se0/2/0
+ip addr 20.20.20.1 255.255.255.252
+no sh
+
+service dhcp
+ip dhcp excluded-address 192.168.20.1
+ip dhcp pool ASN2010_POOL
+network 192.168.20.0 255.255.255.0
+default-router 192.168.20.1
+dns-server 8.8.8.0
+
+router bgp 2010
+bgp router-id 1.1.1.1
+neigh 10.10.10.1 remote-as 35
+network 192.168.10.0 255.255.255.0
+network 10.10.10.0 255.255.255.252
+
+-------------------------
+ASN5899 router
+---------------------------
+en
+config t
+
+int gig0/0 
+ip addr 192.168.10.1 255.255.255.0
+no sh
+ex
+
+int se0/2/1
+ip addr 10.10.10.1 255.255.255.252
+no sh
+
+service dhcp
+ip dhcp excluded-address 192.168.10.1
+ip dhcp pool ASN2010_POOL
+network 192.168.10.0 255.255.255.0
+default-router 192.168.10.1
+dns-server 8.8.8.0
+
+router bgp 2010
+bgp router-id 1.1.1.1
+neigh 20.20.20.2 remote-as 35
+network 192.168.10.0 255.255.255.0
+network 20.20.20.0 255.255.255.252
+
+
+---------------
+ASN 35
+-----------------
+router bgp 35
+bgp router-id 3.3.3.3
+neigh 20.20.20.1 remote-as 58
+neigh 10.10.10.1 remote-as 2010
+network 10.10.10.0 255.255.255.252
+network 20.20.20.0 255.255.255.252
