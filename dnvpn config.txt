@@ -1,3 +1,11 @@
+ACTIAVATINCNG A LINICESE 
+------------------------------
+configure terminal
+license boot module c2900 technology-package securityk9
+license accept end user agreement
+write memory
+reload
+
 ----------------------------
 HQ
 ----------------------------
@@ -16,7 +24,7 @@ crypto isakmp policy 10
 encryption aes
 authentication pre-share
 group 2
-ex
+
 crypto iskamp key cisco address 0.0.0.0 0.0.0.0
 crypto ipsec transform-set KWTRAIN esp-aes esp-sha-hmac
 ex
@@ -33,6 +41,7 @@ ip tcp-adjust-mss 1360
 
 
 
+
 ----------------------------------
 internet
 ---------------------------------------
@@ -44,7 +53,7 @@ no sh
 ex
 
 int ser0/2/1
-ip addr C255.255.255.252 
+ip addr 203.0.223.2 255.255.255.252 
 no sh
 ex
 

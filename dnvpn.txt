@@ -1,0 +1,27 @@
+en
+config t
+int ser0/2/0
+ip addr 192.0.2.1 255.255.255.252
+no sh
+int gig0/1
+ip addr 10.1.1.1 255.255.255.0
+no sh
+
+
+int ser0/2/0
+ip addr 17.16.2.2 255.255.255.252
+no sh
+en
+config t
+int ser0/1/0
+ip addr 17.16.3.1 255.255.255.252
+no sh
+ex
+
+int ser0/2/1
+ip addr 203.0.223.2 255.255.255.252
+no sh
+
+ip route 10.1.2.0 255.255.255.0 172.16.1.2
+
+ip route 10.1.1.0 255.255.255.0 172.16.1.1
